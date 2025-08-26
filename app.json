@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Simple-Bookkeeping",
-    "slug": "Simple-Bookkeeping",
+    "name": "simple-bookkeeping",
+    "slug": "simple-bookkeeping",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "simple-bookkeeping",
+    "scheme": "simplebookkeeping",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.jun_expo01.simplebookkeeping"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "23930034-8856-4ff0-9cec-395d09348a08"
+      }
     }
   }
 }
