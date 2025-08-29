@@ -2,103 +2,92 @@
  * @Author: xiaojun
  * @Date: 2025-08-27 17:52:58
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-27 18:30:03
+ * @LastEditTime: 2025-08-29 16:32:30
  * @Description: 对应操作
  */
 import * as SQLite from "expo-sqlite";
+import schema from "./schema";
 
-// 类型定义
-interface Account {
-	id?: number;
-	name: string;
-	balance: number;
-	currency: string;
-	description?: string;
-	created_at?: string;
+// 数据库版本，当schema发生变化时，需要增加版本号
+const DATABASE_VERSION = 2;
+
+export let db: SQLite.SQLiteDatabase;
+
+export const getDb = () => db;
+
+/**
+ * 检查表是否存在
+ */
+async function tableExists(db: SQLite.SQLiteDatabase, table: string) {
+	const result = await db.getAllAsync(
+		`SELECT name FROM sqlite_master WHERE type='table' AND name=?;`,
+		[table]
+	);
+	return result.length > 0;
 }
 
-interface Category {
-	id?: number;
-	name: string;
-	type: "income" | "expense";
-	icon?: string;
-	color?: string;
-	created_at?: string;
+/**
+ * 检查表中是否有某个字段
+ */
+async function columnExists(db: SQLite.SQLiteDatabase, table: string, column: string) {
+	const result = await db.getAllAsync(`PRAGMA table_info(${table});`);
+	return result.some((row: any) => row.name === column);
 }
 
-interface Transaction {
-	id?: number;
-	amount: number;
-	account_id: number;
-	category_id: number;
-	date?: string;
-	description?: string;
+/**
+ * 检查触发器是否存在
+ */
+async function triggerExists(db: SQLite.SQLiteDatabase, triggerName: string) {
+	const result = await db.getAllAsync(
+		`SELECT name FROM sqlite_master WHERE type='trigger' AND name=?;`,
+		[triggerName]
+	);
+	return result.length > 0;
 }
 
-interface Transfer {
-	id?: number;
-	from_account_id: number;
-	to_account_id: number;
-	amount: number;
-	date?: string;
-	description?: string;
-}
+/**
+ * 运行迁移
+ */
+export const initDb = async (database: SQLite.SQLiteDatabase) => {
+	db = database
 
-// 初始化数据库表结构
-export const initDatabase = async (): Promise<any[]> => {
-  const db = SQLite.openDatabaseSync('expenseTracker.db');
+		// 获取当前版本
+	const data = await database.getFirstAsync<{ user_version: number }>(
+		"PRAGMA user_version"
+	);
 
-	return Promise.all([
-		// 1. A new transaction begins
-    // 创建账户表
-    db.execAsync(
-      `CREATE TABLE IF NOT EXISTS accounts (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          balance REAL DEFAULT 0,
-          currency TEXT DEFAULT 'CNY',
-          description TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );`
-    ),
-    // 创建分类表
-    db.execAsync(
-      `CREATE TABLE IF NOT EXISTS categories (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          type TEXT CHECK(type IN ('income', 'expense')) NOT NULL,
-          icon TEXT,
-          color TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );`
-    ),
-    // 创建交易记录表
-    db.execAsync(
-      `CREATE TABLE IF NOT EXISTS transactions (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          amount REAL NOT NULL,
-          account_id INTEGER NOT NULL,
-          category_id INTEGER NOT NULL,
-          date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          description TEXT,
-          FOREIGN KEY (account_id) REFERENCES accounts (id),
-          FOREIGN KEY (category_id) REFERENCES categories (id)
-        );`
-    ),
-    // 创建转账记录表
-    db.execAsync(
-      `CREATE TABLE IF NOT EXISTS transfers (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          from_account_id INTEGER NOT NULL,
-          to_account_id INTEGER NOT NULL,
-          amount REAL NOT NULL,
-          date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          description TEXT,
-          FOREIGN KEY (from_account_id) REFERENCES accounts (id),
-          FOREIGN KEY (to_account_id) REFERENCES accounts (id)
-        );`
-    ),
-	]);
+	let currentDbVersion = data?.user_version || 0;
+
+	// 无需升级
+	if (currentDbVersion === DATABASE_VERSION) {
+		return;
+	}
+
+	await db.execAsync(`PRAGMA journal_mode = 'wal';`);
+
+	for (const [table, def] of Object.entries(schema)) {
+		// 1. 确保表存在
+		if (!(await tableExists(db, table))) {
+			console.log(`📦 创建表: ${table}`);
+			await db.execAsync(def.createSQL);
+		}
+
+		// 2. 确保每个列存在
+		for (const [col, sql] of Object.entries(def.columns)) {
+			if (!(await columnExists(db, table, col))) {
+				console.log(`➕ 添加列: ${table}.${col}`);
+				await db.execAsync(sql);
+			}
+		}
+
+		// 3. 确保触发器存在
+		for (const [name, sql] of Object.entries(def.triggers || {})) {
+			if (!(await triggerExists(db, name))) {
+				console.log(`⚡ 创建触发器: ${name}`);
+				await db.execAsync(sql);
+			}
+		}
+	}
+
+	console.log("✅ 数据库合并完成");
 };
-
-export default initDatabase;
