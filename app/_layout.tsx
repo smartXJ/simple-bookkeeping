@@ -2,9 +2,10 @@
  * @Author: xiaojun
  * @Date: 2025-08-25 15:38:34
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-29 11:51:35
+ * @LastEditTime: 2025-08-29 22:15:09
  * @Description: 对应操作
  */
+import BookkeepingHeader from "@/components/BookkeepingHeader";
 import { initDb } from "@/db/db";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
@@ -15,7 +16,7 @@ import {
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
 import { Suspense } from "react";
@@ -66,6 +67,7 @@ export default function RootLayout() {
 				<SQLiteProvider databaseName="expense_tracker.db" onInit={initDb}>
 					<Stack>
 						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+						<Stack.Screen name="bookkeeping" options={{ header: BookkeepingHeader}} />
 						<Stack.Screen name="+not-found" />
 					</Stack>
 					<StatusBar style="auto" />

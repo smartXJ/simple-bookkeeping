@@ -1,0 +1,194 @@
+export interface Categories {
+  id: number
+  name: string
+  parent_id: number
+  icon?: string
+  type: 'income' | 'expense'
+  create_at: string
+  update_at: string
+}
+const categoriesTestData: Categories[] = [
+  {
+    id: 1,
+    name: "餐饮",
+    parent_id: 0,
+    icon: "utensils",
+    type: "expense",
+    create_at: "2023-01-01T10:00:00Z",
+    update_at: "2023-01-01T10:00:00Z"
+  },
+  {
+    id: 2,
+    name: "交通",
+    parent_id: 0,
+    icon: "bus",
+    type: "expense",
+    create_at: "2023-01-02T11:00:00Z",
+    update_at: "2023-01-02T11:00:00Z"
+  },
+  {
+    id: 3,
+    name: "工资",
+    parent_id: 0,
+    icon: "money-bill-wave",
+    type: "income",
+    create_at: "2023-01-03T09:00:00Z",
+    update_at: "2023-01-03T09:00:00Z"
+  },
+  {
+    id: 4,
+    name: "房租",
+    parent_id: 0,
+    type: "expense",
+    create_at: "2023-01-04T08:00:00Z",
+    update_at: "2023-01-04T08:00:00Z"
+  },
+  {
+    id: 5,
+    name: "娱乐",
+    parent_id: 0,
+    icon: "gamepad",
+    type: "expense",
+    create_at: "2023-01-05T14:00:00Z",
+    update_at: "2023-01-05T14:00:00Z"
+  },
+  {
+    id: 6,
+    name: "投资",
+    parent_id: 0,
+    icon: "chart-line",
+    type: "income",
+    create_at: "2023-01-06T10:30:00Z",
+    update_at: "2023-01-06T10:30:00Z"
+  },
+  {
+    id: 7,
+    name: "医疗",
+    parent_id: 0,
+    icon: "hospital",
+    type: "expense",
+    create_at: "2023-01-07T13:00:00Z",
+    update_at: "2023-01-07T13:00:00Z"
+  },
+  {
+    id: 8,
+    name: "教育",
+    parent_id: 0,
+    icon: "book",
+    type: "expense",
+    create_at: "2023-01-08T15:00:00Z",
+    update_at: "2023-01-08T15:00:00Z"
+  },
+  {
+    id: 9,
+    name: "购物",
+    parent_id: 0,
+    icon: "shopping-cart",
+    type: "expense",
+    create_at: "2023-01-09T16:00:00Z",
+    update_at: "2023-01-09T16:00:00Z"
+  },
+  {
+    id: 10,
+    name: "奖金",
+    parent_id: 3,
+    type: "income",
+    create_at: "2023-01-10T17:00:00Z",
+    update_at: "2023-01-10T17:00:00Z"
+  },
+  {
+    id: 11,
+    name: "外卖",
+    parent_id: 1,
+    icon: "hamburger",
+    type: "expense",
+    create_at: "2023-01-11T18:00:00Z",
+    update_at: "2023-01-11T18:00:00Z"
+  },
+  {
+    id: 12,
+    name: "打车",
+    parent_id: 2,
+    icon: "taxi",
+    type: "expense",
+    create_at: "2023-01-12T19:00:00Z",
+    update_at: "2023-01-12T19:00:00Z"
+  },
+  {
+    id: 13,
+    name: "电影",
+    parent_id: 5,
+    icon: "film",
+    type: "expense",
+    create_at: "2023-01-13T20:00:00Z",
+    update_at: "2023-01-13T20:00:00Z"
+  },
+  {
+    id: 14,
+    name: "股票",
+    parent_id: 6,
+    icon: "chart-bar",
+    type: "income",
+    create_at: "2023-01-14T21:00:00Z",
+    update_at: "2023-01-14T21:00:00Z"
+  },
+  {
+    id: 15,
+    name: "药品",
+    parent_id: 7,
+    type: "expense",
+    create_at: "2023-01-15T22:00:00Z",
+    update_at: "2023-01-15T22:00:00Z"
+  },
+  {
+    id: 16,
+    name: "书籍",
+    parent_id: 8,
+    icon: "book-open",
+    type: "expense",
+    create_at: "2023-01-16T23:00:00Z",
+    update_at: "2023-01-16T23:00:00Z"
+  },
+  {
+    id: 17,
+    name: "服装",
+    parent_id: 9,
+    icon: "tshirt",
+    type: "expense",
+    create_at: "2023-01-17T09:30:00Z",
+    update_at: "2023-01-17T09:30:00Z"
+  },
+  {
+    id: 18,
+    name: "绩效奖金",
+    parent_id: 3,
+    type: "income",
+    create_at: "2023-01-18T10:30:00Z",
+    update_at: "2023-01-18T10:30:00Z"
+  },
+  {
+    id: 19,
+    name: "公共交通",
+    parent_id: 2,
+    icon: "subway",
+    type: "expense",
+    create_at: "2023-01-19T11:30:00Z",
+    update_at: "2023-01-19T11:30:00Z"
+  },
+  {
+    id: 20,
+    name: "在线课程",
+    parent_id: 8,
+    icon: "laptop",
+    type: "expense",
+    create_at: "2023-01-20T12:30:00Z",
+    update_at: "2023-01-20T12:30:00Z"
+  }
+];
+
+export const getAllCategories = async (): Promise<Categories[]> => {
+  // const db = getDb()
+  // const result = await db.getAllAsync<Ledger>('SELECT * FROM ledgers;');
+  // return result;
+  return categoriesTestData;
+}

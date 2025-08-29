@@ -5,7 +5,7 @@
  * @LastEditTime: 2025-08-26 17:08:32
  * @Description: 对应操作
  */
-import React from "react";
+// import React from "react";
 // import { useColorScheme } from "@/hooks/useColorScheme";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 // import { Text, View } from 'react-native';
@@ -24,7 +24,7 @@ export default function TabLayout() {
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color }) => {
     			let iconName: keyof typeof MaterialIcons.glyphMap = 'home';
-					if (route.name === "home") {
+					if (route.name === "index") {
 						iconName = focused ? "home-filled" : "home";
 					} else if (route.name === "mine") {
 						iconName = focused ? "person-4" : "person";
@@ -46,7 +46,7 @@ export default function TabLayout() {
         //   height: 48, // 图标容器高度
         // },
 			})}>
-			<Tab.Screen name="home" component={HomeScreen} />
+			<Tab.Screen name="index" component={HomeScreen} />
 			<Tab.Screen name="mine" component={MineScreen} />
 		</Tab.Navigator>
 	);

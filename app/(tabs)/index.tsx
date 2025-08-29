@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
 	ActivityIndicator,
@@ -25,6 +26,10 @@ const AccountBook = () => {
 	const [loading, setLoading] = useState(false);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
+
+	const handleAddTransaction = () => {
+		router.push("/bookkeeping/expense");
+	}
 
 	// 格式化日期显示
 	const formatDisplayDate = (dateStr: string) => {
@@ -305,7 +310,7 @@ const AccountBook = () => {
 			/>
 
 			{/* 添加按钮 */}
-			<TouchableOpacity style={styles.addButton}>
+			<TouchableOpacity style={styles.addButton} onPress={handleAddTransaction}>
 				<Text style={styles.addButtonText}>添加一条新记账</Text>
 			</TouchableOpacity>
 		</View>
