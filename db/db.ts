@@ -2,12 +2,14 @@
  * @Author: xiaojun
  * @Date: 2025-08-27 17:52:58
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-29 16:32:30
+ * @LastEditTime: 2025-08-30 11:28:48
  * @Description: 对应操作
  */
 import * as SQLite from "expo-sqlite";
 import schema from "./schema";
 
+
+export const DATABASE_NAME = "expense_tracker.db";
 // 数据库版本，当schema发生变化时，需要增加版本号
 const DATABASE_VERSION = 2;
 
@@ -76,7 +78,7 @@ export const initDb = async (database: SQLite.SQLiteDatabase) => {
 		for (const [col, sql] of Object.entries(def.columns)) {
 			if (!(await columnExists(db, table, col))) {
 				console.log(`➕ 添加列: ${table}.${col}`);
-				await db.execAsync(sql);
+				await db.execAsync(sql as string);
 			}
 		}
 
@@ -88,6 +90,11 @@ export const initDb = async (database: SQLite.SQLiteDatabase) => {
 			}
 		}
 	}
-
+	await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
 	console.log("✅ 数据库合并完成");
 };
+
+export const deleteDd = async () => {
+	await db.closeAsync();
+	await SQLite.deleteDatabaseAsync(DATABASE_NAME);
+}

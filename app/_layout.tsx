@@ -6,7 +6,7 @@
  * @Description: 对应操作
  */
 import BookkeepingHeader from "@/components/BookkeepingHeader";
-import { initDb } from "@/db/db";
+import { DATABASE_NAME, initDb } from "@/db/db";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
 	DarkTheme,
@@ -64,7 +64,7 @@ export default function RootLayout() {
 	return (
 		<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 			<Suspense fallback={<Stack.Screen name="loading" />}>
-				<SQLiteProvider databaseName="expense_tracker.db" onInit={initDb}>
+				<SQLiteProvider databaseName={DATABASE_NAME} onInit={initDb}>
 					<Stack>
 						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 						<Stack.Screen name="bookkeeping" options={{ header: BookkeepingHeader}} />

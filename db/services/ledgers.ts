@@ -2,10 +2,11 @@
  * @Author: xiaojun
  * @Date: 2025-08-29 09:50:44
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-29 16:18:34
+ * @LastEditTime: 2025-08-30 16:07:43
  * @Description: 对应操作
  */
 import { getDb } from "../db";
+import { request } from "../dbUtils";
 // import * as SQLite from "expo-sqlite";
 export interface Ledger {
   id: number;  // 自增主键，创建时可选
@@ -13,9 +14,9 @@ export interface Ledger {
   balance: number;  // 默认0
   currency: string;  // 默认'CNY'
   default_flag: number;  // 默认0，1表示默认账本
-  created_at: string | Date;  // 时间戳，自动生成
   description?: string | null;  // 可选字段
-  update_at?: string | Date;  // 时间戳，自动生成
+  created_at: string | Date;  // 时间戳，自动生成
+  update_at: string | Date;  // 时间戳，自动生成
 }
 export type LedgerReq = Partial<Ledger> & { name: string };
 
@@ -55,3 +56,7 @@ export const setDefaultLedger = async (id: number) => {
     await db.runAsync("UPDATE ledgers SET default_flag = 1 WHERE id = ?", [id]);
   });
 };
+
+export const ledgerPage = (date: PageParams) => {
+  return request.selectByPage<Ledger[]>("ledgers", date, []);
+}

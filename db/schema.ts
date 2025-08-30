@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-29 15:47:41
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-29 17:29:01
+ * @LastEditTime: 2025-08-30 18:24:46
  * @Description: 对应操作
  */
 
@@ -13,7 +13,7 @@ const updateTimeTriggers = (table: string) => {
     AFTER UPDATE ON ${table}
     FOR EACH ROW
     BEGIN
-      UPDATE ${table} SET updated_at = strftime('%s','now') WHERE id = NEW.id;
+      UPDATE ${table} SET updated_at = datetime('now','localtime') WHERE id = NEW.id;
     END;
   `
 }
@@ -35,15 +35,14 @@ const schema = {
         balance REAL DEFAULT 0,
         currency TEXT DEFAULT 'CNY',
         description TEXT,
-        created_at INTEGER DEFAULT CURRENT_TIMESTAMP
+        default_flag INTEGER DEFAULT 0,
+        created_at INTEGER DEFAULT (datetime('now','localtime')),
+        update_at INTEGER DEFAULT (datetime('now','localtime'))
       );
     `,
     // 新增的列
     columns: {
-      updated_at: "ALTER TABLE ledgers ADD COLUMN updated_at INTEGER", // 示例
-      default_flag: "ALTER TABLE ledgers ADD COLUMN default_flag INTEGER DEFAULT 0",
-      // updated_at: "INTEGER DEFAULT CURRENT_TIMESTAMP", // 示例
-      // default_flag: commonAddColumn('ledgers', 'default_flag', "INTEGER DEFAULT 0"),
+      // updated_at: "ALTER TABLE ledgers ADD COLUMN updated_at INTEGER", // 示例
     },
     // 触发器
     triggers: {
@@ -59,8 +58,8 @@ const schema = {
         icon TEXT,
         parent_id INTEGER DEFAULT 0,
         type TEXT NOT NULL,
-        created_at INTEGER DEFAULT CURRENT_TIMESTAMP,
-        update_at INTEGER DEFAULT CURRENT_TIMESTAMP
+        created_at INTEGER DEFAULT (datetime('now','localtime')),
+        update_at INTEGER DEFAULT (datetime('now','localtime'))
       );
     `,
     columns: {},
@@ -75,12 +74,12 @@ const schema = {
       CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        categoryId INTEGER NOT NULL,
-        ledgerId INTEGER NOT NULL,
-        created_at INTEGER DEFAULT CURRENT_TIMESTAMP,
-        update_at INTEGER DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (categoryId) REFERENCES categories(id),
-        FOREIGN KEY (ledgerId) REFERENCES ledgers(id)
+        category_id INTEGER NOT NULL,
+        ledger_id INTEGER NOT NULL,
+        created_at INTEGER DEFAULT (datetime('now','localtime')),
+        update_at INTEGER DEFAULT (datetime('now','localtime')),
+        FOREIGN KEY (category_id) REFERENCES categories(id),
+        FOREIGN KEY (ledger_id) REFERENCES ledgers(id)
       );
     `,
     columns: {},

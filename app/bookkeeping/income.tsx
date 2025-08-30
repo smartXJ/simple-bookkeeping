@@ -2,12 +2,12 @@
  * @Author: xiaojun
  * @Date: 2025-08-29 21:15:50
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-29 21:38:51
+ * @LastEditTime: 2025-08-30 13:57:59
  * @Description: 页面介绍
  */
+import NumericKeypad from "@/components/NumericKeypad";
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
-
 export default function IncomeScreen() {
   return (
     <View>
@@ -15,6 +15,7 @@ export default function IncomeScreen() {
       <Link href="/bookkeeping/expense">
         <Text>Go to Expense Detail</Text>
       </Link>
+      <NumericKeypad />
     </View>
   );
 }

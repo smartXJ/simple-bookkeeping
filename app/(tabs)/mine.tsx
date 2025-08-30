@@ -2,14 +2,14 @@
  * @Author: xiaojun
  * @Date: 2025-08-26 15:10:03
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-29 16:21:10
+ * @LastEditTime: 2025-08-30 18:10:15
  * @Description: 对应操作
  */
-import { addLedger, deleteLedger, getAllLedgers, Ledger } from '@/db/services/ledgers';
+import { deleteDd } from '@/db/db';
+import { addLedger, deleteLedger, getAllLedgers, Ledger, ledgerPage } from '@/db/services/ledgers';
 import MainLayout from '@/layouts/MainLayout';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-
 export default function MineScreen() {
   const [name, setName] = useState('')
   const [ledgers, setLedgers] = useState<Ledger[]>([])
@@ -23,6 +23,8 @@ export default function MineScreen() {
   const getList = async () => {
     setLedgers(await getAllLedgers())
     console.log(ledgers, 'ledgers')
+    const data = await ledgerPage({ pageNum: 1, pageSize: 10 })
+    console.log(data, 'data')
   }
   const onDelete = async (id: number) => {
     await deleteLedger(id)
@@ -47,6 +49,11 @@ export default function MineScreen() {
       <Button
         onPress={() => getList()}
         title="获取列表"
+        color="#158450ff"
+      />
+      <Button
+        onPress={deleteDd}
+        title="删除数据库"
         color="#158450ff"
       />
       <View>
