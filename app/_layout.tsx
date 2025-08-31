@@ -2,10 +2,9 @@
  * @Author: xiaojun
  * @Date: 2025-08-25 15:38:34
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-29 22:15:09
+ * @LastEditTime: 2025-08-31 10:51:33
  * @Description: 对应操作
  */
-import BookkeepingHeader from "@/components/BookkeepingHeader";
 import { DATABASE_NAME, initDb } from "@/db/db";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
@@ -67,7 +66,7 @@ export default function RootLayout() {
 				<SQLiteProvider databaseName={DATABASE_NAME} onInit={initDb}>
 					<Stack>
 						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-						<Stack.Screen name="bookkeeping" options={{ header: BookkeepingHeader}} />
+						<Stack.Screen name="bookkeeping"options={{ headerShown: false }}/>
 						<Stack.Screen name="+not-found" />
 					</Stack>
 					<StatusBar style="auto" />
