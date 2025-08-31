@@ -2,10 +2,39 @@
  * @Author: xiaojun
  * @Date: 2025-08-29 15:47:41
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-30 18:24:46
+ * @LastEditTime: 2025-08-31 10:36:20
  * @Description: 对应操作
  */
 
+type SqlType = "create-table" | "add-column" | "add-trigger" | "insert-row";
+type DBSchema = {
+  // type: SqlType;
+  note: string;
+  sql: string;
+};
+const defaultFields = `
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at INTEGER DEFAULT (datetime('now','localtime')),
+  update_at INTEGER DEFAULT (datetime('now','localtime')),
+`;
+
+type ISchema = {
+  explanation: string;
+  list: DBSchema[];
+};
+
+/**
+ * 格式化数据库结构变更说明
+ */
+const formatSchemaNote = (type: SqlType, note: string) => {
+  const typeMap: Record<SqlType, string> = {
+    "create-table": "📦 创建表：",
+    "add-column": "➕ 新增列：",
+    "add-trigger": "🔔 新增触发器：",
+    "insert-row": "➕ 新增数据行：",
+  };
+  return typeMap[type] ? typeMap[type] + note : "";
+};
 // 更新时间的触发器
 const updateTimeTriggers = (table: string) => {
   return `
@@ -15,79 +44,73 @@ const updateTimeTriggers = (table: string) => {
     BEGIN
       UPDATE ${table} SET updated_at = datetime('now','localtime') WHERE id = NEW.id;
     END;
-  `
-}
-// const commonAddColumn = (table: string, column: string, typeAndDefault: string) => {
-//   return `ALTER TABLE ${table} ADD COLUMN ${column} ${typeAndDefault};`
-// }
-
-/**
- * 数据库表结构配置
- * - 每个表定义：表名 + 初始创建 SQL + 列定义
- */
-const schema = {
-  // 账本表
-  ledgers: {
-    createSQL: `
-      CREATE TABLE IF NOT EXISTS ledgers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        balance REAL DEFAULT 0,
-        currency TEXT DEFAULT 'CNY',
-        description TEXT,
-        default_flag INTEGER DEFAULT 0,
-        created_at INTEGER DEFAULT (datetime('now','localtime')),
-        update_at INTEGER DEFAULT (datetime('now','localtime'))
-      );
-    `,
-    // 新增的列
-    columns: {
-      // updated_at: "ALTER TABLE ledgers ADD COLUMN updated_at INTEGER", // 示例
-    },
-    // 触发器
-    triggers: {
-      updateUpdatedAt: updateTimeTriggers('ledgers')
-    }
-  },
-  // 分类表
-  categories: {
-    createSQL: `
+  `;
+};
+const schema: ISchema[] = [
+  {
+    explanation: "🎉初始化数据",
+    list: [
+      {
+        note: formatSchemaNote("create-table", "ledgers"),
+        sql: `
+          -- 创建主表
+          CREATE TABLE IF NOT EXISTS ledgers (
+            ${defaultFields}
+            name TEXT NOT NULL,
+            balance REAL DEFAULT 0,
+            currency TEXT DEFAULT 'CNY',
+            description TEXT,
+            default_flag INTEGER DEFAULT 0
+          );
+          -- 创建更新触发器
+          ${updateTimeTriggers("ledgers")}
+        `,
+      },
+      {
+        note: formatSchemaNote("insert-row", "1条默认账本"),
+        sql: `
+        INSERT INTO ledgers (name, balance, currency, description, default_flag)
+        VALUES ('日常账本', 0, 'CNY', '', 1);
+      `,
+      },
+      {
+        note: formatSchemaNote("create-table", "categories"),
+        sql: `
       CREATE TABLE IF NOT EXISTS categories (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${defaultFields}
         name TEXT NOT NULL,
         icon TEXT,
         parent_id INTEGER DEFAULT 0,
-        type TEXT NOT NULL,
-        created_at INTEGER DEFAULT (datetime('now','localtime')),
-        update_at INTEGER DEFAULT (datetime('now','localtime'))
+        type TEXT NOT NULL
       );
+      ${updateTimeTriggers("categories")}
     `,
-    columns: {},
-    // 触发器
-    triggers: {
-      updateUpdatedAt: updateTimeTriggers('categories')
-    }
-  },
-  // 交易表
-  transactions: {
-    createSQL: `
+      },
+      {
+        note: formatSchemaNote("insert-row", "4条默认分类"),
+        sql: `
+      INSERT INTO categories (name, icon, parent_id, type)
+      VALUES
+        ('食物', '🍔', 0, 'income'),
+        ('交通', '🚗', 0, 'expense'),
+        ('工资', '💰', 0, 'income'),
+        ('投资', '📈', 0, 'income');
+    `,
+      },
+      {
+        note: formatSchemaNote("create-table", "transactions"),
+        sql: `
       CREATE TABLE IF NOT EXISTS transactions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${defaultFields}
         name TEXT NOT NULL,
         category_id INTEGER NOT NULL,
-        ledger_id INTEGER NOT NULL,
-        created_at INTEGER DEFAULT (datetime('now','localtime')),
-        update_at INTEGER DEFAULT (datetime('now','localtime')),
-        FOREIGN KEY (category_id) REFERENCES categories(id),
-        FOREIGN KEY (ledger_id) REFERENCES ledgers(id)
+        ledger_id INTEGER NOT NULL
       );
+      ${updateTimeTriggers("transactions")}
     `,
-    columns: {},
-    // 触发器
-    triggers: {
-      updateUpdatedAt: updateTimeTriggers('transactions')
-    }
+      },
+    ],
   },
-};
+];
 
 export default schema;
