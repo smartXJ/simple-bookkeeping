@@ -28,7 +28,7 @@ const AccountBook = () => {
 	const [hasMore, setHasMore] = useState(true);
 
 	const handleAddTransaction = () => {
-		router.push("/bookkeeping/expense");
+		router.push("/bookkeeping/0");
 	}
 
 	// 格式化日期显示

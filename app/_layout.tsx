@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-25 15:38:34
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-31 10:51:33
+ * @LastEditTime: 2025-09-01 18:14:58
  * @Description: 对应操作
  */
 import { DATABASE_NAME, initDb } from "@/db/db";
@@ -66,7 +66,7 @@ export default function RootLayout() {
 				<SQLiteProvider databaseName={DATABASE_NAME} onInit={initDb}>
 					<Stack>
 						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-						<Stack.Screen name="bookkeeping"options={{ headerShown: false }}/>
+						<Stack.Screen name="bookkeeping/[id]"options={{ headerShown: false }}/>
 						<Stack.Screen name="+not-found" />
 					</Stack>
 					<StatusBar style="auto" />
