@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-25 15:38:34
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-26 17:08:32
+ * @LastEditTime: 2025-09-01 22:03:22
  * @Description: 对应操作
  */
 // import React from "react";
@@ -31,6 +31,7 @@ export default function TabLayout() {
 					}
 					return <MaterialIcons name={iconName} size={24} color={color} />;
 				},
+				swipeMinDistance: 50,      // 滑动距离需超过50px才切换
 				tabBarLabelPosition: 'beside-icon',
 				tabBarActiveTintColor: "#007AFF",
 				tabBarInactiveTintColor: "#8E8E93",

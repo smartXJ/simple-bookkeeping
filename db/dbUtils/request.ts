@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-30 14:02:39
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-30 18:11:45
+ * @LastEditTime: 2025-09-01 21:17:51
  * @Description: 对应操作
  */
 
@@ -29,13 +29,13 @@ export class Request {
 	}
 	private buildSelectQuery(
 		tableName: string,
-    data: Data,
+    data?: Data,
 		conditions?: QueryCondition[],
     sqlPrefix?: string // 默认 *, 可指定字段
 	): { sql: string; params: any[] } {
 		let sql = `${sqlPrefix || 'SELECT *'} FROM ${tableName}`;
 		const params: any[] = [];
-		if (conditions && conditions.length > 0) {
+		if (data && conditions && conditions.length > 0) {
       const whereClauses: string[] = [];
       
 			conditions.forEach((cond) => {
@@ -98,7 +98,7 @@ export class Request {
 		}
 	}
 
-	public async inset(tableName: string, data: Data) {
+	public async insert(tableName: string, data: Data) {
 		const [insertFields, insertValues] = this.extractKeyValuePairs(data);
 		const sql = `INSERT INTO ${tableName} (${insertFields.join(
 			", "
@@ -127,7 +127,7 @@ export class Request {
 
 	public async selectAll<T>(
 		tableName: string,
-    data: Data,
+    data?: Data,
 		conditions?: QueryCondition[]
 	): Promise<T[]> {
     const { sql, params } = this.buildSelectQuery(tableName, data, conditions);

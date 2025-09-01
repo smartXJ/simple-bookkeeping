@@ -34,7 +34,7 @@ export const getAllLedgers = async (): Promise<Ledger[]> => {
   const result = await db.getAllAsync<Ledger>('SELECT * FROM ledgers;');
   return result;
 }
-export const getLedgerById = async (id: number): Promise<Ledger | null> => {
+export const getLedger = async (id: number): Promise<Ledger | null> => {
   const db = getDb()
   return db.getFirstAsync<Ledger>('SELECT * FROM ledgers WHERE id = ?;', [id]);
 }
