@@ -3,7 +3,7 @@ import { request } from "../dbUtils";
 
 const TABLE_NAME = "categories"
 
-type CategoryType = 'income' | 'expense';
+export type CategoryType = 'income' | 'expense';
 export interface Category {
 	id: number;
 	name: string;

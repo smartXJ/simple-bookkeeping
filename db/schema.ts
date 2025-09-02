@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-29 15:47:41
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-31 10:36:20
+ * @LastEditTime: 2025-09-02 16:59:01
  * @Description: 对应操作
  */
 
@@ -48,7 +48,7 @@ const updateTimeTriggers = (table: string) => {
 };
 const schema: ISchema[] = [
   {
-    explanation: "🎉初始化数据",
+    explanation: "🎉 初始化数据",
     list: [
       {
         note: formatSchemaNote("create-table", "ledgers"),
@@ -102,7 +102,7 @@ const schema: ISchema[] = [
         sql: `
       CREATE TABLE IF NOT EXISTS transactions (
         ${defaultFields}
-        name TEXT NOT NULL,
+        description TEXT,
         category_id INTEGER NOT NULL,
         ledger_id INTEGER NOT NULL
       );

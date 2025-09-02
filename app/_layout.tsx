@@ -2,23 +2,17 @@
  * @Author: xiaojun
  * @Date: 2025-08-25 15:38:34
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-09-01 18:14:58
+ * @LastEditTime: 2025-09-02 18:05:02
  * @Description: 对应操作
  */
+import { useCategories } from "@/contents/CategoryContext";
 import { DATABASE_NAME, initDb } from "@/db/db";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import {
-	DarkTheme,
-	DefaultTheme,
-	ThemeProvider,
-} from "@react-navigation/native";
+import { getAllCategories } from "@/db/services/categories";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
-import { useFonts } from "expo-font";
-import { Stack, } from "expo-router";
-import { SQLiteProvider } from "expo-sqlite";
+import { Stack } from "expo-router";
+import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
-import { Suspense } from "react";
 import "react-native-reanimated";
 
 // 设置全局语言为中文
@@ -39,7 +33,7 @@ console.warn = (...args) => {
 		args[0]?.includes?.("shadowOpacity") ||
 		args[0]?.includes?.("shadowRadius") ||
 		args[0]?.includes?.("shadowColor") ||
-		args[0]?.includes?.("shadow*")
+		args[0]?.includes?.("shadow")
 	) {
 		return;
 	}
@@ -47,31 +41,28 @@ console.warn = (...args) => {
 };
 
 export default function RootLayout() {
-	//  useEffect(() => {
-	//   initDb(db);
-	// }, []);
-	const colorScheme = useColorScheme();
-	const [loaded] = useFonts({
-		// SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-	});
+	 const { dispatch } = useCategories();
 
-	if (!loaded) {
-		// Async font loading only occurs in development.
-		return null;
+	const initialization = async (db: SQLiteDatabase) => {
+	  await initDb(db)
+		const list = await getAllCategories()
+		console.log(list, 'list')
+		dispatch({ type: "SET_CATEGORIES", payload: list })
 	}
-
 	return (
-		<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-			<Suspense fallback={<Stack.Screen name="loading" />}>
-				<SQLiteProvider databaseName={DATABASE_NAME} onInit={initDb}>
-					<Stack>
-						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-						<Stack.Screen name="bookkeeping/[id]"options={{ headerShown: false }}/>
-						<Stack.Screen name="+not-found" />
-					</Stack>
-					<StatusBar style="auto" />
-				</SQLiteProvider>
-			</Suspense>
-		</ThemeProvider>
+		<SQLiteProvider
+			databaseName={DATABASE_NAME}
+			onInit={initialization}
+			>
+			<Stack>
+				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+				<Stack.Screen
+					name="bookkeeping/[id]"
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen name="+not-found" />
+			</Stack>
+			<StatusBar style="auto" />
+		</SQLiteProvider>
 	);
 }

@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-30 14:02:39
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-09-01 21:17:51
+ * @LastEditTime: 2025-09-02 13:45:54
  * @Description: 对应操作
  */
 
@@ -14,7 +14,7 @@ type Data = Record<string, any>;
 type Condition = { field: string; value: any };
 type QueryCondition = {
 	field: string;
-	value: any;
+	value?: any;
 	fieldType?: "string" | "date";
 };
 export class Request {
@@ -39,7 +39,7 @@ export class Request {
       const whereClauses: string[] = [];
       
 			conditions.forEach((cond) => {
-        const value = data[cond.field];
+        const value = cond.value ?? data[cond.field];
 				if ( value === null || value === undefined || value === "" ) return;
 
 				if (cond.fieldType === "date") {

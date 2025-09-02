@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-27 17:52:58
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-31 10:36:24
+ * @LastEditTime: 2025-09-02 18:02:07
  * @Description: 对应操作
  */
 import * as SQLite from "expo-sqlite";
@@ -26,9 +26,10 @@ export const initDb = async (database: SQLite.SQLiteDatabase) => {
 	const data = await database.getFirstAsync<{ user_version: number }>(
 		"PRAGMA user_version"
 	);
-
+	
 	let currentDbVersion = data?.user_version || 0;
-
+	// let currentDbVersion = DATABASE_VERSION;
+	console.log("当前数据库版本：", currentDbVersion);
 	// 无需升级
 	if (currentDbVersion === DATABASE_VERSION) {
 		return;
@@ -51,6 +52,8 @@ export const initDb = async (database: SQLite.SQLiteDatabase) => {
 };
 
 export const deleteDd = async () => {
+	console.log(db.databasePath);
 	await db.closeAsync();
 	await SQLite.deleteDatabaseAsync(DATABASE_NAME);
+	console.log("✅ 数据库删除完成");
 }
