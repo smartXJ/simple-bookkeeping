@@ -2,12 +2,12 @@
  * @Author: xiaojun
  * @Date: 2025-08-25 15:38:34
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-09-02 18:05:02
+ * @LastEditTime: 2025-09-02 21:16:49
  * @Description: 对应操作
  */
-import { useCategories } from "@/contents/CategoryContext";
 import { DATABASE_NAME, initDb } from "@/db/db";
 import { getAllCategories } from "@/db/services/categories";
+import { useCategoryStore } from "@/store/categoryStore";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import { Stack } from "expo-router";
@@ -41,28 +41,24 @@ console.warn = (...args) => {
 };
 
 export default function RootLayout() {
-	 const { dispatch } = useCategories();
+	const setCategories = useCategoryStore((state) => state.setCategories);
 
 	const initialization = async (db: SQLiteDatabase) => {
-	  await initDb(db)
-		const list = await getAllCategories()
-		console.log(list, 'list')
-		dispatch({ type: "SET_CATEGORIES", payload: list })
-	}
+		await initDb(db);
+		const list = await getAllCategories();
+		setCategories(list);
+	};
 	return (
-		<SQLiteProvider
-			databaseName={DATABASE_NAME}
-			onInit={initialization}
-			>
-			<Stack>
-				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-				<Stack.Screen
-					name="bookkeeping/[id]"
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen name="+not-found" />
-			</Stack>
-			<StatusBar style="auto" />
+		<SQLiteProvider databaseName={DATABASE_NAME} onInit={initialization}>
+				<Stack>
+					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+					<Stack.Screen
+						name="bookkeeping/[id]"
+						options={{ headerShown: false }}
+					/>
+					<Stack.Screen name="+not-found" />
+				</Stack>
+				<StatusBar style="auto" />
 		</SQLiteProvider>
 	);
 }

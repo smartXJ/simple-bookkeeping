@@ -13,7 +13,7 @@ const TABLE_NAME = "transactions";
 
 export interface Transaction {
 	id: number;
-
+	amount: number;
 	description?: string;
 	// 类别数据
 	category_Id: number;
