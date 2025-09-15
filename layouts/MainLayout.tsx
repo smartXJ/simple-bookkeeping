@@ -2,12 +2,12 @@
  * @Author: xiaojun
  * @Date: 2025-08-26 16:55:58
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-08-26 17:05:31
+ * @LastEditTime: 2025-09-15 17:36:52
  * @Description: 对应操作
  */
 
 import React, { ReactNode } from 'react';
-import { SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -25,19 +25,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   contentStyle,
 }) => {
   return (
-    <SafeAreaView style={[styles.container, containerStyle]}>
+    <View style={[styles.container, containerStyle]}>
       {/* <StatusBar style="auto" /> */}
       {/* {header && <View style={[styles.header, headerStyle]}>{header}</View>} */}
       <View style={[styles.content, contentStyle]}>{children}</View>
       {/* {footer && <View style={[styles.footer, footerStyle]}>{footer}</View>} */}
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    // backgroundColor: '#f2f2f2',
   },
   // header: {
   //   padding: 16,

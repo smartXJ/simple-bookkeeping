@@ -25,8 +25,8 @@ export const getCategory = (id: number) => {
 export const createCategory = (category: CategoryReq) => {
 	return request.insert(TABLE_NAME, category)
 }
-export const updateCategory = (id: number, category: CategoryReq) => {
-	return request.update(TABLE_NAME, category, { field: 'id', value: id })
+export const updateCategory = (category: CategoryReq) => {
+	return request.update(TABLE_NAME, category, { field: 'id', value: category.id })
 }
 export const deleteCategory = (id: number) => {
 	return request.delete(TABLE_NAME, { field: 'id', value: id })

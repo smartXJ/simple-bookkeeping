@@ -60,3 +60,7 @@ export const setDefaultLedger = async (id: number) => {
 export const ledgerPage = (date: PageParams) => {
   return request.selectByPage<Ledger[]>("ledgers", date, []);
 }
+
+export const getDefaultLedger = async (): Promise<Ledger | null> => {
+  return request.selectOne<Ledger>("ledgers", { field: "default_flag", value: 1 });
+}

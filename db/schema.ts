@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-08-29 15:47:41
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-09-03 10:41:54
+ * @LastEditTime: 2025-09-15 16:28:18
  * @Description: 对应操作
  */
 
@@ -103,6 +103,7 @@ const schema: ISchema[] = [
       CREATE TABLE IF NOT EXISTS transactions (
         ${defaultFields}
         description TEXT,
+        type TEXT NOT NULL,
         amount REAL DEFAULT 0,
         category_id INTEGER NOT NULL,
         ledger_id INTEGER NOT NULL

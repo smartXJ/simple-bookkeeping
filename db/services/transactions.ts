@@ -2,7 +2,7 @@
  * @Author: xiaojun
  * @Date: 2025-09-02 11:42:42
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-09-02 13:44:00
+ * @LastEditTime: 2025-09-15 16:26:04
  * @Description: 对应操作
  */
 // import { request } from "../dbUtils";
@@ -44,6 +44,10 @@ export const transactionPage = (data: TransactionParam & PageParams) => {
     { field: 'type' }
 	]);
 };
+
+export const getAllTransactions = () => {
+	return request.selectAll<Transaction>(TABLE_NAME);
+}
 
 export const getTransaction = (id: number) => {
 	return request.selectOne<Transaction>(TABLE_NAME, { field: "id", value: id });

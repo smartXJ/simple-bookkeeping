@@ -1,49 +1,60 @@
 import NumericKeypad from "@/components/NumericKeypad";
 import { Category } from "@/db/services/categories";
+import { createTransaction, getAllTransactions, TransactionReq, updateTransaction } from "@/db/services/transactions";
 import { useCategoryStore } from "@/store/categoryStore";
+import { useLedgerStore } from "@/store/ledgerStore";
 import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+	Alert,
 	Button,
 	Dimensions,
 	ScrollView,
 	StyleSheet,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View
-} from "react-native";
+} from 'react-native';
 
 const { width } = Dimensions.get("window");
 
 export default function Modify() {
 	const scrollRef = useRef<ScrollView>(null);
 
+	const numericKeypadRef = useRef<React.ComponentRef<typeof NumericKeypad>>(null);
 	const categories = useCategoryStore((state) => state.categories);
+
+	const defaultLedger = useLedgerStore((state) => state.ledger);
+
 	const [expenseCategories, setExpenseCategories] = useState<Category[]>([]);
 	const [incomeCategories, setIncomeCategories] = useState<Category[]>([]);
+
+	const [transactionData, setTransactionData] = useState<TransactionReq>({
+		category_Id: 0,
+		description: "",
+		ledger_Id: defaultLedger.id,
+		type: "expense",
+		amount: 0,
+	});
 
 	useEffect(() => {
 		setExpenseCategories(categories.filter((item) => item.type === "expense"));
 		setIncomeCategories(categories.filter((item) => item.type === "income"));
-
-		setTimeout(() => {
-			initCategoryId();
-		}, 400);
 	}, [categories]);
 
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [categoryId, setCategoryId] = useState(0);
 
-	const initCategoryId= () => {
-		console.log(expenseCategories, 'expenseCategories')
-	  setCategoryId(
+	const initCategoryId = () => {
+		setCategoryId(
 			activeIndex === 0 ? expenseCategories[0]?.id : incomeCategories[0]?.id
 		);
-	}
+	};
 
 	useEffect(() => {
 		// setType(activeIndex === 0 ? "expense" : "income");
-		initCategoryId()
+		initCategoryId();
 	}, [activeIndex]);
 
 	const scrollToInput = (index: number) => {
@@ -60,23 +71,41 @@ export default function Modify() {
 		}
 	};
 
+
 	const CategoryButton = ({ category }: { category: Category }) => {
-		  return (
-    <TouchableOpacity
-      style={[
-        styles.CBtn,
-        categoryId === category.id && styles.CBtnActive
-      ]}
-      onPress={() => setCategoryId(category.id)}>
-      <Text style={{
-        color: categoryId === category.id ? '#fff' : '#000'
-      }}>{category.name}</Text>
-    </TouchableOpacity>
-  );
+		return (
+			<TouchableOpacity
+				style={[styles.CBtn, categoryId === category.id && styles.CBtnActive]}
+				onPress={() => setCategoryId(category.id)}>
+				<Text
+					style={{
+						color: categoryId === category.id ? "#fff" : "#000",
+					}}>
+					{category.name}
+				</Text>
+			</TouchableOpacity>
+		);
 	};
 
 	const back = () => {
 		router.back();
+	};
+
+	const onCompleted = async (value: string) => {
+		const params = {
+			...transactionData,
+			category_Id: categoryId,
+			amount: Number(value),
+		}
+		if (params.id) {
+			await updateTransaction(params)
+		} else {
+			await createTransaction(params)
+		}
+		const list = await getAllTransactions()
+		console.log(params, '完成', list);
+		Alert.alert('操作成功')
+		back()
 	}
 
 	return (
@@ -121,7 +150,15 @@ export default function Modify() {
 
 			{/* 底部区域 */}
 			<View style={styles.bottomSection}>
-				<NumericKeypad />
+				<TextInput
+					style={styles.remarkInput}
+					placeholder="备注"
+					value={transactionData.description}
+					onChangeText={(text) =>
+						setTransactionData({ ...transactionData, description: text })
+					}
+				/>
+				<NumericKeypad onCompleted={onCompleted} ref={numericKeypadRef}/>
 			</View>
 		</View>
 	);
@@ -131,6 +168,15 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		flexDirection: "column",
+		// backgroundColor: "#d31111ff",
+	},
+	remarkInput: {
+		height: 40,
+		borderWidth: 1,
+		borderColor: "#ccc",
+		borderRadius: 5,
+		marginBottom: 10,
+		paddingHorizontal: 10,
 	},
 	topSection: {
 		// height: 80,
@@ -139,7 +185,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		// paddingHorizontal: 20,
 		paddingVertical: 10,
-		backgroundColor: "#f5f5f5",
+		// backgroundColor: "#f5f5f5",
 	},
 	middleSection: {
 		flex: 1,

@@ -5,22 +5,30 @@
  * @LastEditTime: 2025-09-01 21:54:30
  * @Description: 对应操作
  */
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import {
-	Alert,
-	Platform,
-	StyleProp,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-	ViewStyle,
+  Alert,
+  Platform,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
 } from "react-native";
 
 const btnList = [1, 2, 3, 4, 5, 6, 7, 8, 9, "再记", 0, "."];
 const operatorBtnList = ["+", "-", "x", "÷"];
+// 定义组件的 ref 类型
+export interface NumericKeypadRef {
+  setInput: (value: string) => void;
+  // input: string;
+}
+interface NumericKeypadProps {
+  onCompleted: (input: string) => void;
+}
 
-export default function NumericKeypad() {
+ function NumericKeypad(props: NumericKeypadProps, ref: React.Ref<NumericKeypadRef>) {
   const [input, setInput] = useState("");
   const BKButton = ({ item }: { item: number | string }) => {
     const [isPressed, setIsPressed] = useState(false);
@@ -28,6 +36,10 @@ export default function NumericKeypad() {
 
     const handlePressIn = () => setIsPressed(true);
     const handlePressOut = () => setIsPressed(false);
+
+    useImperativeHandle(ref, () => ({
+      setInput,
+    }))
 
     if (btnList.includes(item)) {
       style.push(styles.itemBtn);
@@ -57,6 +69,7 @@ export default function NumericKeypad() {
       setInput("");
     } else if (value === "再记") {
     } else if (value === "完成") {
+      props.onCompleted(input);
     } else if (value === "=") {
       try {
         const result = eval(
@@ -179,3 +192,5 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }],
   },
 });
+
+export default forwardRef(NumericKeypad);

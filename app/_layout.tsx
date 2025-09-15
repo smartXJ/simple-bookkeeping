@@ -2,18 +2,21 @@
  * @Author: xiaojun
  * @Date: 2025-08-25 15:38:34
  * @LastEditors: xiaojun
- * @LastEditTime: 2025-09-02 21:16:49
+ * @LastEditTime: 2025-09-15 17:58:28
  * @Description: 对应操作
  */
 import { DATABASE_NAME, initDb } from "@/db/db";
 import { getAllCategories } from "@/db/services/categories";
+import { getDefaultLedger } from "@/db/services/ledgers";
 import { useCategoryStore } from "@/store/categoryStore";
+import { useLedgerStore } from "@/store/ledgerStore";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import { Stack } from "expo-router";
 import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // 设置全局语言为中文
 dayjs.locale("zh-cn");
@@ -42,15 +45,24 @@ console.warn = (...args) => {
 
 export default function RootLayout() {
 	const setCategories = useCategoryStore((state) => state.setCategories);
+	const setLedger = useLedgerStore((state) => state.setLedger);
 
 	const initialization = async (db: SQLiteDatabase) => {
 		await initDb(db);
 		const list = await getAllCategories();
+		const ledger = await getDefaultLedger();
 		setCategories(list);
+		if (ledger) {
+			setLedger(ledger);
+		}
 	};
 	return (
 		<SQLiteProvider databaseName={DATABASE_NAME} onInit={initialization}>
-				<Stack>
+			<SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
+				<StatusBar style="auto" />
+				<Stack
+					screenOptions={{
+					}}>
 					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 					<Stack.Screen
 						name="bookkeeping/[id]"
@@ -58,7 +70,7 @@ export default function RootLayout() {
 					/>
 					<Stack.Screen name="+not-found" />
 				</Stack>
-				<StatusBar style="auto" />
+			</SafeAreaView>
 		</SQLiteProvider>
 	);
 }
